@@ -60,9 +60,19 @@ class Console:
             msg.write(const.endBytes)
 
             self.sock.send(msg.getvalue())
-            response = BytesIO(self.sock.recv(const.packetSize))
-
-            return response.getvalue()[5:-3].decode()
+            data=""
+            while(1):
+                try:
+                    response = BytesIO(self.sock.recv(1400))
+                except:
+                    break
+                tmp=response.getvalue()[5:-3].decode('utf-8',errors='replace')
+                data+=tmp
+                if len(tmp)>=1200:
+                    continue
+                else:
+                    break
+            return data
         except Exception as e:
             print(e)
             self.disconnect()
